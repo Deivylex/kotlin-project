@@ -10,11 +10,15 @@ data class MongoCollections(
     val users: MongoCollection<Document>
 )
 
-fun Application.configureDatabase(): MongoCollections {
+    fun Application.configureDatabase(): MongoCollections {
 
-    val env = dotenv { ignoreIfMissing = false } // only for dev
-    val client = KMongo.createClient(env["MONGO_URI"])
-    val db = client.getDatabase(env["MONGO_DB"])
+    val config = environment.config
+
+    val uri = config.property("ktor.mongo.uri").getString()
+    val dbName = config.property("ktor.mongo.database").getString()
+
+    val client = KMongo.createClient(uri)
+    val db = client.getDatabase(dbName)
 
     return MongoCollections(
         users = db.getCollection("users"),

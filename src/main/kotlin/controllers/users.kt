@@ -7,12 +7,13 @@ import io.ktor.http.*
 import com.example.services.UserService
 import com.example.models.dto.RegisterRequest
 import com.example.models.dto.UserResponse
+import com.example.models.mappers.toResponse
 
 class UserController(private val service: UserService) {
 
     suspend fun getUsers(call: ApplicationCall) {
         val users = service.getUsers()
-        call.respond(users)
+        call.respond(users.map{ it.toResponse() })
     }
 
     suspend fun register(call: ApplicationCall) {
@@ -21,7 +22,8 @@ class UserController(private val service: UserService) {
         val userResponse = UserResponse(
             id = user.id!!,
             email = user.email,
-            name = user.name
+            name = user.name,
+            role = user.role
         )
         call.respond(HttpStatusCode.Created, userResponse)
     }

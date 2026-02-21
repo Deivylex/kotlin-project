@@ -7,6 +7,7 @@ import com.example.application.configureRouting
 import com.example.application.configureDatabase
 import com.example.application.module.user.configureUserModule
 
+
 fun Application.module() {
     configurePlugins()
     val db = configureDatabase() 
