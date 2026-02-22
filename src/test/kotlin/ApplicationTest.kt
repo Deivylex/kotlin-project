@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.getCollection
 import org.bson.Document
+import com.example.helpers.registerTestUser
 
 fun ApplicationTestBuilder.TestConfig() {
     environment {
@@ -84,5 +85,44 @@ class ApplicationTest {
         assertEquals("TestUser", json["name"]?.toString()?.trim('"'))
         assertEquals("user", json["role"]?.toString()?.trim('"'))
         assertNotNull(json["id"])
+    }
+
+    @Test
+    fun `testLoginUser invalid account` () = testApplication {
+        TestConfig()
+        application {
+            module()
+        }
+        val response = client.post("/login") {
+        contentType(ContentType.Application.Json)
+        setBody("""
+            {
+                "email": "test123@example.com",
+                "password": "password123"
+            }
+        """.trimIndent())
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @Test
+    fun `testLoginUser valid account` () = testApplication {
+        TestConfig()
+        application {
+            module()
+        }
+        registerTestUser(client, "test123@example.com", "password123")
+        val response = client.post("/login") {
+        contentType(ContentType.Application.Json)
+        setBody("""
+            {
+                "email": "test123@example.com",
+                "password": "password123"
+            }
+        """.trimIndent())
+        }
+        println("STATUS = ${response.status}")
+        println("BODY = ${response.bodyAsText()}")
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 }

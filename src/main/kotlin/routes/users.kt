@@ -4,9 +4,11 @@ import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import com.example.controllers.UserController
+import com.example.controllers.LoginController
 
 
-fun Route.users(controller: UserController) {
+
+fun Route.users(controller: UserController, loginController: LoginController) {
 
     post("/register") {
         controller.register(call)
@@ -18,5 +20,9 @@ fun Route.users(controller: UserController) {
 
     get("/") {
         call.respondText("dev app!!")
+    }
+
+    post("/login") {
+        loginController.login(call)
     }
 }

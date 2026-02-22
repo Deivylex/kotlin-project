@@ -6,11 +6,16 @@ import com.example.application.configureRouting
 //import com.example.application.database.configureDatabase
 import com.example.application.configureDatabase
 import com.example.application.module.user.configureUserModule
+import com.example.application.module.user.configureLoginModule
 
 
 fun Application.module() {
     configurePlugins()
-    val db = configureDatabase() 
+
+    val db = configureDatabase()
+
     val userController = configureUserModule(db)
-    configureRouting(userController)
+    val loginController = configureLoginModule(db)
+
+    configureRouting(userController, loginController)
 }

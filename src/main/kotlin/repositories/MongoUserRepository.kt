@@ -1,6 +1,7 @@
 package com.example.repositories
 
 import com.example.models.domain.User
+import com.example.models.domain.LoginResult
 import com.mongodb.client.MongoCollection
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -27,7 +28,7 @@ class MongoUserRepository(
         val doc = Document().apply {
             put("email", user.email)
             put("name", user.name)
-            put("passwordHash", user.passwordHash)
+            put("passwordhash", user.passwordHash)
             put("role", user.role)
         }
 
@@ -36,5 +37,20 @@ class MongoUserRepository(
         val id = doc.getObjectId("_id").toHexString()
 
         return user.copy(id = id)
+    }
+
+    override suspend fun findByEmail(email: String): LoginResult? {
+        return collection
+            .find(Document("email", email))
+            .firstOrNull()
+            ?.let { doc ->
+                LoginResult (
+                    id = doc.getObjectId("_id").toString(),
+                    email = doc.getString("email"),
+                    name = doc.getString("name"),
+                    passwordHash = doc.getString("passwordhash"),
+                    role = doc.getString("role")
+                )
+            }
     }
 }
