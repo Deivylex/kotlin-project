@@ -1,6 +1,7 @@
 package com.example.repositories
 
 import com.example.models.domain.User
+import com.example.models.domain.Order
 import com.example.models.domain.LoginResult
 import com.mongodb.client.MongoCollection
 import org.bson.Document
@@ -52,5 +53,40 @@ class MongoUserRepository(
                     role = doc.getString("role")
                 )
             }
+    }
+
+    override suspend fun findById(id: String): User? {
+        return collection
+            .find(Document("_id", id))
+            .firstOrNull()
+            ?.let { doc ->
+                User (
+                    id = doc.getObjectId("_id").toString(),
+                    email = doc.getString("email"),
+                    name = doc.getString("name"),
+                    passwordHash = doc.getString("passwordhash"),
+                    role = doc.getString("role")
+                )
+            }
+    }
+
+    override suspend fun createOrder(order: Order): Order {
+
+        val doc = Document().apply {
+            put("customerName", order.customerName)
+            put("phone", order.phone)
+            put("company", order.company)
+            put("tortillaType", order.tortillaType)
+            put("productType", order.productType)
+            put("size", order.size)
+            put("quantity", order.quantity)
+            put("orderDate", order.orderDate)
+            put("status", order.status)
+            put("notes", order.notes)
+            put("userId", order.userId)    
+        }
+        collection.insertOne(doc)
+        val id = doc.getObjectId("_id").toHexString()
+        return order.copy(id = id)
     }
 }

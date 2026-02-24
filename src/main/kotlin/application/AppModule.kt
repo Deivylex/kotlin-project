@@ -7,6 +7,7 @@ import com.example.application.configureRouting
 import com.example.application.configureDatabase
 import com.example.application.module.user.configureUserModule
 import com.example.application.module.user.configureLoginModule
+import com.example.application.module.order.configureOrderModule
 
 
 fun Application.module() {
@@ -16,6 +17,7 @@ fun Application.module() {
 
     val userController = configureUserModule(db)
     val loginController = configureLoginModule(db)
+    val orderController = configureOrderModule(db)
 
-    configureRouting(userController, loginController)
+    configureRouting(userController, loginController, orderController)
 }

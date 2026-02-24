@@ -6,21 +6,29 @@ import org.litote.kmongo.KMongo
 import com.mongodb.client.MongoCollection 
 import org.bson.Document
 
-data class MongoCollections(
+
+data class MongoCollections ( 
+    val orders: MongoCollection<Document>, 
     val users: MongoCollection<Document>
 )
 
-    fun Application.configureDatabase(): MongoCollections {
-
+private fun Application.mongoDatabase(): com.mongodb.client.MongoDatabase {
     val config = environment.config
 
     val uri = config.property("ktor.mongo.uri").getString()
     val dbName = config.property("ktor.mongo.database").getString()
 
     val client = KMongo.createClient(uri)
-    val db = client.getDatabase(dbName)
+    return client.getDatabase(dbName)
+}
+
+fun Application.configureDatabase(): MongoCollections {
+
+    val db = mongoDatabase()
 
     return MongoCollections(
         users = db.getCollection("users"),
+        orders = db.getCollection("orders")
     )
 }
+
